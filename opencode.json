@@ -23,8 +23,22 @@
     }
   },
   "permission": {
-    "edit": "allow",
-    "read": "allow",
+    "read": {
+      "*": "allow",
+      "**/application-secrets.properties": "deny",
+      "**/*.pem": "deny",
+      "**/certs/**": "deny",
+      "**/.env*": "deny",
+      "**/secrets/**": "deny"
+    },
+    "edit": {
+      "*": "allow",
+      "**/application-secrets.properties": "deny",
+      "**/*.pem": "deny",
+      "**/certs/**": "deny",
+      "**/.env*": "deny",
+      "**/secrets/**": "deny"
+    },
     "glob": "allow",
     "grep": "allow",
     "list": "allow",
@@ -39,13 +53,21 @@
     },
     "bash": {
       "*": "allow",
-      "git push --force*": "deny",
-      "git push -f*": "deny",
-      "git push --force-with-lease*": "deny",
+      "git -c * push*": "deny",
+      "git push* --force*": "deny",
+      "git push* -f*": "deny",
       "git rebase*": "deny",
-      "git reset --hard*": "deny",
-      "rm -rf *": "deny",
+      "git pull* --rebase*": "deny",
+      "git reset* --hard*": "deny",
+      "git merge *": "deny",
+      "gh pr merge*": "deny",
+      "rm -rf*": "deny",
+      "rm -r -f*": "deny",
+      "rm -fr*": "deny",
+      "docker compose down -v*": "deny",
+      "docker compose exec mysql mysql -e *drop*": "deny",
       "docker compose exec mysql mysql -e *DROP*": "deny",
+      "mysql -e *drop*": "deny",
       "mysql -e *DROP*": "deny"
     }
   }
