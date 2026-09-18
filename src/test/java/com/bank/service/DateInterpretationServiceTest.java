@@ -120,6 +120,32 @@ class DateInterpretationServiceTest {
     }
 
     @Test
+    void rejectsMonthAnswerOutsideTheOfferedOptions() {
+        client.answers = absoluteDate("Aug", "16", "1990", 0.95);
+
+        DateParseException ex = assertThrows(DateParseException.class,
+                () -> service.parse("16 Aug 1990"));
+
+        assertTrue(ex.getMessage().contains("Accepted formats"), "was: " + ex.getMessage());
+    }
+
+    @Test
+    void rejectsNonFiniteConfidence() {
+        Map<String, ChoiceAnswer> answers = absoluteDate("August", "16", "1990", 0.95);
+        answers.put("month", new ChoiceAnswer("August", Map.of("August", Double.NaN), Double.NaN));
+        client.answers = answers;
+
+        assertThrows(DateParseException.class, () -> service.parse("16 August 1990"));
+    }
+
+    @Test
+    void rejectsNullAnswersFromClient() {
+        client.answers = null;
+
+        assertThrows(DateParseException.class, () -> service.parse("16th August, 1990"));
+    }
+
+    @Test
     void reportsAcceptedFormatsWhenTypeSafeIsDisabled() {
         client.enabled = false;
 

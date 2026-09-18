@@ -1,5 +1,6 @@
 package com.bank.exception;
 
+import com.bank.integration.typesafe.TypeSafeClient;
 import com.bank.modules.customer.service.CustomerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(properties = "typesafe.api-key=")
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class MalformedRequestBodyTest {
@@ -26,6 +28,14 @@ class MalformedRequestBodyTest {
 
     @MockBean
     private CustomerService customerService;
+
+    @Autowired
+    private TypeSafeClient typeSafeClient;
+
+    @Test
+    void typeSafeIsDisabledInTests() {
+        assertFalse(typeSafeClient.isEnabled(), "tests must never call TypeSafe");
+    }
 
     @Test
     @WithMockUser(authorities = "USER")

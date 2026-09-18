@@ -82,6 +82,10 @@ public class DateInterpretationService {
     }
 
     private LocalDate assemble(String value, Map<String, ChoiceAnswer> answers) {
+        if (answers == null) {
+            throw unparsed(value);
+        }
+
         ChoiceAnswer mode = answers.get("mode");
         ChoiceAnswer month = answers.get("month");
         ChoiceAnswer day = answers.get("day");
@@ -97,7 +101,7 @@ public class DateInterpretationService {
         double confidence = Math.min(
                 Math.min(mode.confidence(), month.confidence()),
                 Math.min(day.confidence(), year.confidence()));
-        if (confidence < MIN_CONFIDENCE) {
+        if (!(confidence >= MIN_CONFIDENCE)) {
             throw unparsed(value);
         }
 
@@ -111,7 +115,7 @@ public class DateInterpretationService {
             }
 
             return LocalDate.of(yearValue, monthValue, dayValue);
-        } catch (NumberFormatException | DateTimeException e) {
+        } catch (IllegalArgumentException | DateTimeException e) {
             throw unparsed(value);
         }
     }
